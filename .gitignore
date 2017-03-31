@@ -1,0 +1,7 @@
+*.sln
+build/
+.vc/
+.vs/
+Content/StarterContent/
+Intermediate/
+Saved/
