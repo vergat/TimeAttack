@@ -35,20 +35,29 @@ void ACheckpoint::Tick(float DeltaTime)
 
 }
 
+void ACheckpoint::SetCheckpointIndex(int32 index)
+{
+	checkpointIndex = index;
+}
+
+int32 ACheckpoint::GetCheckPointIndex()
+{
+	return checkpointIndex;
+}
+
 void ACheckpoint::OnOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
 {
 	ATimeAttackPawn* Pawn = Cast<ATimeAttackPawn>(OtherActor);
 	if (FVector::DotProduct(Pawn->GetVelocity(),Arrow->GetComponentRotation().Vector())>0.f) {
+		CheckpointPassed.Broadcast(checkpointIndex);
 		Deactivate();
 	}
-	//aggiungere eventdispatcher ChecpointPassed in tracker
-
 }
 
 void ACheckpoint::Activate()
 {
-	Particle->SetHiddenInGame(true, false);
-	Trigger->SetHiddenInGame(true, false);
+	Particle->SetHiddenInGame(false, false);
+	Trigger->SetHiddenInGame(false, false);
 	Trigger->bGenerateOverlapEvents = true;
 }
 

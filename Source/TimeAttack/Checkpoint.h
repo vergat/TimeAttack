@@ -7,6 +7,7 @@
 #include"TimeAttackPawn.h"
 #include "Checkpoint.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCheckpointPassed,int32,checkpointIndex);
 
 UCLASS()
 class TIMEATTACK_API ACheckpoint : public AActor
@@ -18,7 +19,8 @@ public:
 	ACheckpoint();
 
 private:
-	int32 CheckpointIndex;
+	UPROPERTY(EditAnywhere)
+	int32 checkpointIndex;
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,6 +29,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void SetCheckpointIndex(int32 index);
+	int32 GetCheckPointIndex();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		USceneComponent* Root;
@@ -39,6 +43,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		UParticleSystemComponent* Particle;
+
+		FCheckpointPassed CheckpointPassed;
 
 	UFUNCTION()
 		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
