@@ -51,9 +51,15 @@ private:
 	UPROPERTY(EditAnywhere)
 		float defaultBestTime;
 
+	UPROPERTY(EditAnywhere)
+		FText mapName;
+
+	UPROPERTY(EditAnywhere)
+		FString SaveGameName;
+
 	ATimeAttackPlayerController *playerController;
 
-	void SetupPlayerController(ATimeAttackPlayerController*);
+	void SetupPlayerController();
 	void SetupCheckpoints();
 	void LapCheck(int32);
 	bool RaceCompleteCheck();

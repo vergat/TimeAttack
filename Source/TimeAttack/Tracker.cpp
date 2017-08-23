@@ -17,7 +17,7 @@ void ATracker::BeginPlay()
 {
 	Super::BeginPlay();
 	playerController=Cast<ATimeAttackPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	SetupPlayerController(playerController);
+	SetupPlayerController();
 	SetupCheckpoints();
 }
 
@@ -31,12 +31,23 @@ void ATracker::Tick(float DeltaTime)
 void ATracker::OnCheckpointPassed(int32 checkpointIndex)
 {
 	LapCheck(checkpointIndex);
-	//ha bisogno del player controller finito per andare anvanti
+	if (playerController->raceComplete)
+	{
+		playerController->Restat();
+	}
 }
 
-void ATracker::SetupPlayerController(ATimeAttackPlayerController * TargetPlayer)
+void ATracker::SetupPlayerController()
 {
-	//ha bisogno del player controller finito per andare anvanti
+	playerController->goldTime = goldTime;
+	playerController->silverTime = silverTime;
+	playerController->bronzeTime = bronzeTime;
+	playerController->defaultBestLapTime = defaultBestLap;
+	playerController->defaultBestRaceTime = defaultBestTime;
+	playerController->maxLaps = maxLaps;
+	playerController->MapName = mapName;
+	playerController->saveSlot = SaveGameName;
+	playerController->Setup();
 }
 
 void ATracker::SetupCheckpoints()
@@ -53,12 +64,24 @@ void ATracker::SetupCheckpoints()
 
 void ATracker::LapCheck(int32 CheckpointPassed)
 {
-	//ha bisogno del player controller finito per andare anvanti
+	playerController->respawnLocation = checkPoints[CheckpointPassed]->GetActorTransform();
+	if (CheckpointPassed == (totalCheckpoints - 1))
+	{
+		if (!RaceCompleteCheck())
+		{
+			checkPoints[0]->Activate();
+		}
+		playerController->UpdateLap();
+	}
+	else
+	{
+		checkPoints[CheckpointPassed + 1]->Activate();
+	}
 }
 
 bool ATracker::RaceCompleteCheck()
 {
-	//ha bisogno del player controller finito per andare anvanti
-	return false;
+	playerController->raceComplete = (playerController->currentLap>=playerController->maxLaps);
+	return playerController->raceComplete;
 }
 
