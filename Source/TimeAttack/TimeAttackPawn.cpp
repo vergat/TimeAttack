@@ -5,6 +5,7 @@
 #include "TimeAttackWheelFront.h"
 #include "TimeAttackWheelRear.h"
 #include "TimeAttackHud.h"
+#include "TimeAttackPlayerController.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -242,6 +243,15 @@ void ATimeAttackPawn::Tick(float Delta)
 {
 	Super::Tick(Delta);
 
+	if (playerController->raceStart)
+	{
+		EnableInput(playerController);
+		if (RespawnCheck())
+		{
+			GetWorldTimerManager().SetTimer(delay, this, &ATimeAttackPawn::RespawnVehicle, 2.0f, false);
+		}
+	}
+
 	// Setup the flag to say we are in reverse gear
 	bInReverseGear = GetVehicleMovement()->GetCurrentGear() < 0;
 	
@@ -275,12 +285,15 @@ void ATimeAttackPawn::Tick(float Delta)
 	// Pass the engine RPM to the sound component
 	float RPMToAudioScale = 2500.0f / GetVehicleMovement()->GetEngineMaxRotationSpeed();
 	EngineSoundComponent->SetFloatParameter(EngineAudioRPM, GetVehicleMovement()->GetEngineRotationSpeed()*RPMToAudioScale);
+
 }
 
 void ATimeAttackPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//OnDestroyed.AddDynamic(this, &ATimeAttackPawn::WhenDestroyed);
+	this->OnDestroyed.AddDynamic(this,&ATimeAttackPawn::WhenDestroyed);
 	bool bWantInCar = false;
 	// First disable both speed/gear displays 
 	bInCarCameraActive = false;
@@ -295,6 +308,11 @@ void ATimeAttackPawn::BeginPlay()
 	EnableIncarView(bWantInCar);
 	// Start an engine sound playing
 	EngineSoundComponent->Play();
+
+	playerController = Cast<ATimeAttackPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+	playerController->respawnLocation = this->GetActorTransform();
+	DisableInput(playerController);
 }
 
 void ATimeAttackPawn::OnResetVR()
@@ -328,6 +346,26 @@ void ATimeAttackPawn::UpdateHUDStrings()
 		GearDisplayString = (Gear == 0) ? LOCTEXT("N", "N") : FText::AsNumber(Gear);
 	}
 
+}
+
+bool ATimeAttackPawn::RespawnCheck()
+{
+	bool result;
+	result = (FVector::DotProduct(this->GetActorUpVector(), FVector(0.0, 0.0, 1.0)) < 0.5f)&&(GetVehicleMovement()->GetForwardSpeed()<0.5f);
+	return result;
+}
+
+void ATimeAttackPawn::RespawnVehicle()
+{
+	if (RespawnCheck())
+	{
+		Destroy();
+	}
+}
+
+void ATimeAttackPawn::WhenDestroyed(AActor* Act)
+{
+	playerController->RespawnVehicle();
 }
 
 void ATimeAttackPawn::SetupInCarHUD()

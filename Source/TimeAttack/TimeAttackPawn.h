@@ -8,6 +8,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UTextRenderComponent;
 class UInputComponent;
+class ATimeAttackPlayerController;
 
 UCLASS(config=Game)
 class ATimeAttackPawn : public AWheeledVehicle
@@ -140,4 +141,14 @@ public:
 	FORCEINLINE UTextRenderComponent* GetInCarGear() const { return InCarGear; }
 	/** Returns EngineSoundComponent subobject **/
 	FORCEINLINE UAudioComponent* GetEngineSoundComponent() const { return EngineSoundComponent; }
+
+private:
+	ATimeAttackPlayerController* playerController;
+	bool RespawnCheck();
+protected:
+		FTimerHandle delay;
+		UFUNCTION()
+		void RespawnVehicle();
+		UFUNCTION()
+		void WhenDestroyed(AActor* Act);
 };

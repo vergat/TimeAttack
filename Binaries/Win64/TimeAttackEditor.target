@@ -2,7 +2,7 @@
 	"TargetName" : "TimeAttackEditor",
 	"Platform" : "Win64",
 	"Configuration" : "Development",
-	"BuildId" : "",
+	"BuildId" : "b5394ce6-e5f0-44a7-95d0-db4bb4221ba8",
 	"Version" : 
 	{
 		"MajorVersion" : 4,
@@ -17,15 +17,15 @@
 	"BuildProducts" :
 	[
 		{
-			"Path" : "$(ProjectDir)/Binaries/Win64/UE4Editor-TimeAttack.dll",
+			"Path" : "$(ProjectDir)/Binaries/Win64/UE4Editor-TimeAttack-9742.dll",
 			"Type" : "DynamicLibrary"
 		},
 		{
-			"Path" : "$(ProjectDir)/Binaries/Win64/UE4Editor-TimeAttack.pdb",
+			"Path" : "$(ProjectDir)/Binaries/Win64/UE4Editor-TimeAttack-9742.pdb",
 			"Type" : "SymbolFile"
 		},
 		{
-			"Path" : "$(ProjectDir)/Intermediate/Build/Win64/UE4Editor/Development/UE4Editor-TimeAttack.lib",
+			"Path" : "$(ProjectDir)/Intermediate/Build/Win64/UE4Editor/Development/UE4Editor-TimeAttack-9742.lib",
 			"Type" : "ImportLibrary"
 		},
 		{

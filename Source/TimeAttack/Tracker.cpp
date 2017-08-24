@@ -67,6 +67,7 @@ void ATracker::LapCheck(int32 CheckpointPassed)
 	playerController->respawnLocation = checkPoints[CheckpointPassed]->GetActorTransform();
 	if (CheckpointPassed == (totalCheckpoints - 1))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("racecomplete"));
 		if (!RaceCompleteCheck())
 		{
 			checkPoints[0]->Activate();
@@ -81,7 +82,9 @@ void ATracker::LapCheck(int32 CheckpointPassed)
 
 bool ATracker::RaceCompleteCheck()
 {
-	playerController->raceComplete = (playerController->currentLap>=playerController->maxLaps);
-	return playerController->raceComplete;
+	bool result;
+	result=(playerController->currentLap >= playerController->maxLaps);
+	playerController->raceComplete = result;
+	return result;
 }
 

@@ -6,50 +6,68 @@
 #include "TimeConversions.h"
 #include "TimeAttackPlayerController.h"
 
+ATimeAttackPlayerController::ATimeAttackPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	static ConstructorHelpers::FObjectFinder<UCurveFloat> Curvy(TEXT("/Game/TimeAttack/TimeCurve"));
+	if (Curvy.Object)
+	{
+		timeCurve = Curvy.Object;
+	}
+	raceTimeline = ObjectInitializer.CreateDefaultSubobject<UTimelineComponent>(this, TEXT("RacelineScore"));
+	lapTimeline = ObjectInitializer.CreateDefaultSubobject<UTimelineComponent>(this, TEXT("LapTimeline"));
+	RaceFunction.BindUFunction(this, FName("RaceTimelineFloatReturn"));
+	LapFunction.BindUFunction(this, FName("LapTimelineFloatReturn"));
+}
+
 
 void ATimeAttackPlayerController::BeginPlay()
 {
 	vehicle = Cast<ATimeAttackPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
 	if (HUDWidgetClass != nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("dentro hud"));
 		currentWidget = CreateWidget<UUserWidget>(GetWorld(), HUDWidgetClass);
 		if (currentWidget != nullptr)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("widget"));
 			currentWidget->AddToViewport();
 		}
 	}
 	currentLap = 1;
 	doOnceGuard = false;
 	InputComponent->BindAction("PressingR", IE_Released, this, &ATimeAttackPlayerController::ResetBestTime);
-	raceTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("RaceTimeline"));
-	lapTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("LapTimeline"));
+	InputComponent->BindAction("StartSequence", IE_Released, this, &ATimeAttackPlayerController::StartRaceSequence);
+	//raceTimeline = ObjectInitializer.CreateDefaultSubobject<UTimelineComponent>(this, TEXT("TimelineScore"));
+	/*lapTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("LapTimeline"));
 
 	RaceFunction.BindUFunction(this, FName("RaceTimelineFloatReturn"));
 	LapFunction.BindUFunction(this, FName("LapTimelineFloatReturn"));
-	static ConstructorHelpers::FObjectFinder<UCurveFloat> Curvy(TEXT("/Game/TimeAttack/TimeCurve.uasset"));
+	/*static ConstructorHelpers::FObjectFinder<UCurveFloat> Curvy(TEXT("/Game/TimeAttack/TimeCurve.uasset"));
 	if (Curvy.Object)
 	{
 		timeCurve = Curvy.Object;
-	}
+	}*/
 	if (timeCurve)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("cuuurvaaaa"));
 		raceTimeline->AddInterpFloat(timeCurve, RaceFunction,FName("RaceTime"));
 		lapTimeline->AddInterpFloat(timeCurve, LapFunction, FName("LapTime"));
 
 		raceTimeline->SetLooping(false);
 		lapTimeline->SetLooping(false);
-	}	
+	}
 }
 
 void ATimeAttackPlayerController::RespawnVehicle()
 {
-
 	ATimeAttackPawn* newVehicle=GetWorld()->SpawnActor<ATimeAttackPawn>(respawnLocation.GetLocation(),respawnLocation.GetRotation().Rotator());
 	Possess(newVehicle);
 }
 
 void ATimeAttackPlayerController::UpdateLap()
 {
+	UE_LOG(LogTemp, Warning, TEXT("lapfinito"));
+
 	if (!raceComplete) 
 	{
 		currentLap++;
@@ -68,6 +86,7 @@ void ATimeAttackPlayerController::EndLapUpdate()
 		SaveGame();
 	}
 	currentLapTime = 0.0f;
+	//UE_LOG(LogTemp, Warning, TEXT("raceComplete %s"), (raceComplete ? TEXT("True") : TEXT("False")));
 	if (raceComplete)
 	{
 		EndRaceUpdate();
@@ -166,6 +185,7 @@ void ATimeAttackPlayerController::RaceTimelineFloatReturn(float value)
 {
 	currentRaceTime = value;
 	CurrentRaceTimeText = TimeConversions::TimeToText(value);
+	UE_LOG(LogTemp, Warning, TEXT("racetime %f"),value);
 }
 
 void ATimeAttackPlayerController::LapTimelineFloatReturn(float value)

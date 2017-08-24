@@ -14,7 +14,8 @@ UCLASS()
 class TIMEATTACK_API ATimeAttackPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	ATimeAttackPlayerController(const FObjectInitializer& ObjectInitializer);
 public:
 	int32 currentLap;
 	int32 maxLaps;
@@ -30,9 +31,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FText MapName;
-
-	class UTimelineComponent* raceTimeline;
-	class UTimelineComponent* lapTimeline;
+	UPROPERTY()
+	UTimelineComponent* raceTimeline;
+	UPROPERTY()
+	UTimelineComponent* lapTimeline;
 
 	bool raceComplete;
 	bool raceStart;
@@ -80,7 +82,7 @@ protected:
 		TSubclassOf<UUserWidget> HUDWidgetClass;
 	UPROPERTY()
 	class UUserWidget* currentWidget;
-
+	
 public:
 	void RespawnVehicle();
 	void UpdateLap();

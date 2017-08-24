@@ -25,14 +25,7 @@ ACheckpoint::ACheckpoint()
 void ACheckpoint::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ACheckpoint::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	Trigger->OnComponentEndOverlap.AddDynamic(this, &ACheckpoint::OnOverlapEnd);
 }
 
 void ACheckpoint::SetCheckpointIndex(int32 index)
