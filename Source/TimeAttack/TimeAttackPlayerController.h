@@ -3,8 +3,6 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
-#include "Runtime/Engine/Classes/Components/TimelineComponent.h"
-#include "Blueprint/UserWidget.h"
 #include "TimeAttackPlayerController.generated.h"
 
 /**
@@ -14,6 +12,10 @@ UCLASS()
 class TIMEATTACK_API ATimeAttackPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+	UTimelineComponent* raceTimeline;
+	//class UTimelineComponent* lapTimeline;
+
 public:
 	ATimeAttackPlayerController(const FObjectInitializer& ObjectInitializer);
 public:
@@ -31,10 +33,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FText MapName;
-	UPROPERTY()
-	UTimelineComponent* raceTimeline;
-	UPROPERTY()
-	UTimelineComponent* lapTimeline;
+
 
 	bool raceComplete;
 	bool raceStart;
@@ -77,12 +76,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FText CountdownText;
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UMG Game")
-		TSubclassOf<UUserWidget> HUDWidgetClass;
 	UPROPERTY()
-	class UUserWidget* currentWidget;
-	
+		class UUserWidget* currentWidget;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UMG Game")
+		TSubclassOf<class UUserWidget> HUDWidgetClass;
 public:
 	void RespawnVehicle();
 	void UpdateLap();
@@ -98,15 +95,21 @@ public:
 	UFUNCTION()
 		void StartRaceSequence();
 
-	UPROPERTY(EditAnywhere, Category="Timeline")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Timeline")
 	class UCurveFloat* timeCurve;
 
+
+
 	FOnTimelineFloat RaceFunction{};
+	FOnTimelineEvent TimelineEventEvent{};
 	FOnTimelineFloat LapFunction{};
 
 	UFUNCTION()
 		void RaceTimelineFloatReturn(float value);
 	
+	UFUNCTION()
+		void OnEventEvent();
+
 	UFUNCTION()
 		void LapTimelineFloatReturn(float value);
 protected:
