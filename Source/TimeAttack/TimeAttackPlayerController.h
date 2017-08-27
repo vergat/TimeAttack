@@ -75,7 +75,12 @@ protected:
 	FText BestLapTimeText;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FText CountdownText;
-
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool GameHUD;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool SplashScreen;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	bool CountdownScreen;
 	UPROPERTY()
 		class UUserWidget* currentWidget;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UMG Game")
@@ -93,7 +98,7 @@ public:
 	void ResetBestTime();
 
 	UFUNCTION()
-		void StartRaceSequence();
+	void StartRaceSequence();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Timeline")
 	class UCurveFloat* timeCurve;
@@ -121,6 +126,7 @@ protected:
 		void RestartLevel();
 
 private:
+
 	void RefreshHUD();
 	void SaveGameCheck();
 	void SaveGame();

@@ -24,8 +24,10 @@ ATimeAttackPlayerController::ATimeAttackPlayerController(const FObjectInitialize
 	//TimelineEventEvent.BindUFunction(this, FName("OnEventEvent"));
 	//RaceFunction.BindDynamic(this, &ATimeAttackPlayerController::RaceTimelineFloatReturn);
 	//LapFunction.BindUFunction(this, FName("LapTimelineFloatReturn"));
+	GameHUD = false;
+	SplashScreen = true;
+	CountdownScreen = false;
 }
-
 
 void ATimeAttackPlayerController::BeginPlay()
 {
@@ -43,7 +45,8 @@ void ATimeAttackPlayerController::BeginPlay()
 	}
 	currentLap = 1;
 	doOnceGuard = false;
-	InputComponent->BindAction("PressingR", IE_Released, this, &ATimeAttackPlayerController::ResetBestTime);
+	raceStart = false;
+	InputComponent->BindAction("ResetBestTime", IE_Pressed, this, &ATimeAttackPlayerController::ResetBestTime);
 	InputComponent->BindAction("StartSequence", IE_Released, this, &ATimeAttackPlayerController::StartRaceSequence);
 	//raceTimeline = ObjectInitializer.CreateDefaultSubobject<UTimelineComponent>(this, TEXT("TimelineScore"));
 	/*lapTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("LapTimeline"));
@@ -69,7 +72,6 @@ void ATimeAttackPlayerController::BeginPlay()
 		raceTimeline->SetLooping(false);
 		raceTimeline->SetIgnoreTimeDilation(true);
 		//lapTimeline->SetLooping(false);
-		raceStart = true;
 		UE_LOG(LogTemp, Warning, TEXT("racetimeline %s"), (raceTimeline->IsPlaying() ? TEXT("True") : TEXT("False")));
 		raceTimeline->PlayFromStart();
 		raceTimeline->Play();
@@ -119,6 +121,8 @@ void ATimeAttackPlayerController::EndLapUpdate()
 
 void ATimeAttackPlayerController::EndRaceUpdate()
 {
+	GameHUD = false;
+	SplashScreen = true;
 	if (currentRaceTime < bestRaceTime)
 	{
 		bestRaceTime = currentRaceTime;
@@ -186,6 +190,8 @@ void ATimeAttackPlayerController::ResetBestTime()
 	{
 		bestLapTime = defaultBestLapTime;
 		bestRaceTime = defaultBestRaceTime;
+		SaveGame();
+		RefreshHUD();
 	}
 }
 
@@ -193,8 +199,9 @@ void ATimeAttackPlayerController::StartRaceSequence()
 {
 	if (!doOnceGuard)
 	{
+		SplashScreen = false;
+		CountdownScreen = true;
 		doOnceGuard = true;
-		//todo hud init
 		CountdownText = FText::FromString("3");
 		timerDel.BindUFunction(this, FName("CountdownSequence"), 3);
 		GetWorldTimerManager().SetTimer(delay, timerDel, 1.5f, false);
@@ -237,8 +244,9 @@ void ATimeAttackPlayerController::CountdownSequence(int32 value)
 
 void ATimeAttackPlayerController::EndSequence()
 {
-	//todo HUD init
 	raceStart = true;
+	CountdownScreen = false;
+	GameHUD = true;
 	//raceTimeline->Play();
 	//lapTimeline->PlayFromStart();
 }

@@ -127,7 +127,7 @@ private:
 	/** Non Slippery Material instance */
 	UPhysicalMaterial* NonSlipperyMaterial;
 
-
+	bool doOnce;
 public:
 	/** Returns SpringArm subobject **/
 	FORCEINLINE USpringArmComponent* GetSpringArm() const { return SpringArm; }

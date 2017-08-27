@@ -248,7 +248,11 @@ void ATimeAttackPawn::Tick(float Delta)
 		EnableInput(playerController);
 		if (RespawnCheck())
 		{
-			GetWorldTimerManager().SetTimer(delay, this, &ATimeAttackPawn::RespawnVehicle, 2.0f, false);
+			if (!doOnce)
+			{
+				doOnce = true;
+				GetWorldTimerManager().SetTimer(delay, this, &ATimeAttackPawn::RespawnVehicle, 2.0f, false);
+			}	
 		}
 	}
 
@@ -291,8 +295,6 @@ void ATimeAttackPawn::Tick(float Delta)
 void ATimeAttackPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//OnDestroyed.AddDynamic(this, &ATimeAttackPawn::WhenDestroyed);
 	this->OnDestroyed.AddDynamic(this,&ATimeAttackPawn::WhenDestroyed);
 	bool bWantInCar = false;
 	// First disable both speed/gear displays 
@@ -312,7 +314,8 @@ void ATimeAttackPawn::BeginPlay()
 	playerController = Cast<ATimeAttackPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	
 	playerController->respawnLocation = this->GetActorTransform();
-	DisableInput(playerController);
+	this->DisableInput(playerController);
+	doOnce = false;
 }
 
 void ATimeAttackPawn::OnResetVR()
@@ -361,6 +364,7 @@ void ATimeAttackPawn::RespawnVehicle()
 	{
 		Destroy();
 	}
+	doOnce = false;
 }
 
 void ATimeAttackPawn::WhenDestroyed(AActor* Act)
