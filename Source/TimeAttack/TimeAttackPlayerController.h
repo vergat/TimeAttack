@@ -13,11 +13,11 @@ class TIMEATTACK_API ATimeAttackPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
-	UTimelineComponent* raceTimeline;
-	//class UTimelineComponent* lapTimeline;
+	class UTimelineComponent* raceTimeline;
+	class UTimelineComponent* lapTimeline;
 
 public:
-	ATimeAttackPlayerController(const FObjectInitializer& ObjectInitializer);
+	ATimeAttackPlayerController();
 public:
 	int32 currentLap;
 	int32 maxLaps;
@@ -34,16 +34,13 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	FText MapName;
 
-
 	bool raceComplete;
 	bool raceStart;
 
 	FString saveSlot;
-	//ATimeAttackSaveGame saveGameReference;
 
 	FTransform respawnLocation;
 	ATimeAttackPawn* vehicle;
-	//UUserWidget* mywidget;
 
 	FTimerHandle delay;
 	FTimerDelegate timerDel;
@@ -103,20 +100,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Timeline")
 	class UCurveFloat* timeCurve;
 
-
-
 	FOnTimelineFloat RaceFunction{};
-	FOnTimelineEvent TimelineEventEvent{};
 	FOnTimelineFloat LapFunction{};
 
 	UFUNCTION()
 		void RaceTimelineFloatReturn(float value);
-	
-	UFUNCTION()
-		void OnEventEvent();
 
 	UFUNCTION()
 		void LapTimelineFloatReturn(float value);
+
 protected:
 	UFUNCTION()
 		void CountdownSequence(int32 value);
@@ -126,7 +118,6 @@ protected:
 		void RestartLevel();
 
 private:
-
 	void RefreshHUD();
 	void SaveGameCheck();
 	void SaveGame();
