@@ -16,7 +16,7 @@ ACheckpoint::ACheckpoint()
 	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger"));
 	Trigger->SetupAttachment(Root);
 	Trigger->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
-	Particle = CreateDefaultSubobject<UParticleSystemComponent>(("Particle"));
+	Particle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
 	Particle->SetupAttachment(Root);
 
 }
